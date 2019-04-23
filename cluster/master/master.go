@@ -19,7 +19,6 @@ func apiV1MasterHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("GET.....from Master")
 	case "POST":
 		{
-			log.Printf("master exit......")
 			cluster.GMasterlive = false
 		}
 	default:
