@@ -3,7 +3,6 @@ package main
 import (
 	"cube/cluster"
 	"cube/restapi"
-	"log"
 	"net/http"
 )
 
@@ -22,7 +21,6 @@ func apiV1Cluster(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "PUT" {
 
 		cluster.APIV1StartCluster("my-cluster", "3")
-		log.Println(cluster.GClusterStatus)
 
 	} else if r.Method == "DELETE" {
 		cluster.APIV1KillCluster("dddd")

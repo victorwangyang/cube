@@ -15,9 +15,7 @@ func apiV1NodeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("GET.....from Master")
 	case "POST":
 		{
-			log.Printf("node exit......")
 			cluster.GNodelive = false
-
 		}
 	default:
 		log.Println("DEFAULT.......")
