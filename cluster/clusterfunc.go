@@ -1,9 +1,9 @@
 package cluster
 
 import (
-	"cube/restapi"
 	"log"
 	"math/rand"
+	"net/rpc"
 	"os"
 	"os/exec"
 	"strconv"
@@ -19,90 +19,84 @@ const (
 	NodeExePosition   = "./cluster/node/node"
 )
 
-//GClusterStatus is saving the info of cluster
-var GClusterStatus = V1ClusterStatus{}
-
-// V1ClusterStatus is struct of cluster status
-type V1ClusterStatus struct {
-	ClusterName string
-	MasterName  string
-	MasterPort  string
-	NodeNumber  string
-	Nodes       []V1NodeStatus
+// MasterInfo is struct of Master information
+type MasterInfo struct {
+	MasterName string
+	MasterPort string
+	NodeNumber string
 }
 
-// V1NodeStatus is struct of cluster status file
-type V1NodeStatus struct {
-	NodePort string
-	NodeName string
+// NodeInfo is struct of Node information
+type NodeInfo struct {
+	NodePort      string
+	NodeLiveCount int
 }
 
-// APIV1StartCluster is to start a cluster of V1
-func APIV1StartCluster(clustername string, nodenumber string) {
+//GMasterInfo is GMasterInfo
+var GMasterInfo MasterInfo
+
+//GNodeInfo is GNodeInfo
+var GNodeInfo map[string]NodeInfo
+
+// APIV1StartCluster is called by doserver's RESTful API to start the Cluster
+func APIV1StartCluster(nodenumber string) string {
 
 	//set cluster staus values
-	GClusterStatus.ClusterName = clustername
-
-	randNum := strconv.Itoa(rand.Intn(100000))
-	GClusterStatus.MasterName = "Master-PM-" + randNum
-
-	GClusterStatus.MasterPort = strconv.Itoa(30000 + rand.Intn(10000))
-
-	GClusterStatus.NodeNumber = nodenumber
-
-	nodenum, _ := strconv.Atoi(nodenumber)
-	GClusterStatus.Nodes = make([]V1NodeStatus, nodenum, nodenum)
+	mastername := "Master-PM-" + strconv.Itoa(80000+rand.Intn(10000))
+	masterport := strconv.Itoa(30000 + rand.Intn(10000))
 
 	//start Master process
-	cmd := exec.Command(MasterExePosition, GClusterStatus.MasterName, GClusterStatus.MasterPort)
+	cmd := exec.Command(MasterExePosition, mastername, masterport, nodenumber)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Start()
 
-	log.Printf("%s is starting......", GClusterStatus.MasterName)
-
-	//Start Nodes process
-	v1startNodesDeamon(&GClusterStatus)
-
-	return
+	return masterport
 }
 
-// APIV1KillCluster is to kill the Cluster
-func APIV1KillCluster(clustername string) {
+// APIV1KillCluster is called by doserver's RESTful API to kill the Cluster
+func APIV1KillCluster(masterport string) {
 
-	var body []byte
-	nodeNumber, _ := strconv.Atoi(GClusterStatus.NodeNumber)
+	var live, reply bool
 
-	// kill nodes first
-	for i := 0; i < nodeNumber; i++ {
-		log.Printf("%s  is Stopping......", GClusterStatus.Nodes[i].NodeName)
-		restapi.Post(TargetAddr+":"+GClusterStatus.Nodes[i].NodePort+NodeDirectory, body)
+	live = false
+
+	//kill master,before that ,master will kill nodes firstly
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+masterport)
+
+	if err != nil {
+		log.Fatal("dialing:", err)
 	}
 
-	//then kill master last
-	restapi.Post(TargetAddr+":"+GClusterStatus.MasterPort+MasterDirectory, body)
-	log.Printf("%s is stopping......", GClusterStatus.MasterName)
+	err = client.Call("Master.KillMaster", live, &reply)
+
+	if err != nil {
+		log.Fatal("arith error:", err)
+	}
+
 	return
 }
 
-func v1startNodesDeamon(status *V1ClusterStatus) {
+//APIV1StartNodesDeamon is called by master's main() to start noedes
+func APIV1StartNodesDeamon(nodenumber string, masterport string) {
 
-	nodeNumber, _ := strconv.Atoi(status.NodeNumber)
+	nodeNumber, _ := strconv.Atoi(nodenumber)
 
 	for i := 0; i < nodeNumber; i++ {
 
-		randNum := strconv.Itoa(rand.Intn(100000))
-		status.Nodes[i].NodeName = "Node-PM-" + randNum
-		status.Nodes[i].NodePort = strconv.Itoa(50000 + rand.Intn(10000))
+		nodename := "Node-PM-" + strconv.Itoa(90000+rand.Intn(10000))
+		nodeport := strconv.Itoa(20000 + rand.Intn(10000))
 
-		cmd := exec.Command(NodeExePosition, status.Nodes[i].NodeName, status.Nodes[i].NodePort, status.MasterPort)
+		var tempNodeInfo = NodeInfo{nodeport, 0}
+		GNodeInfo[nodename] = tempNodeInfo
+
+		cmd := exec.Command(NodeExePosition, nodename, masterport, nodeport)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Start()
 
-		log.Printf("%s is Starting......", status.Nodes[i].NodeName)
 	}
 
 	return

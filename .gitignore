@@ -2,3 +2,6 @@
 doserver/doserver
 cluster/master/master
 cluster/node/node
+do/do
+.DS_Store
+do/do

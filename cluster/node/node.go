@@ -2,38 +2,40 @@ package main
 
 import (
 	"cube/cluster"
-	"cube/restapi"
 	"log"
+	"net"
 	"net/http"
+	"net/rpc"
 	"os"
 )
 
-func apiV1NodeHandler(w http.ResponseWriter, r *http.Request) {
-
-	switch r.Method {
-	case "GET":
-		log.Println("GET.....from Master")
-	case "POST":
-		{
-			cluster.GNodelive = false
-		}
-	default:
-		log.Println("DEFAULT.......")
-
-	}
-
-}
-
-var nodeAPI = []restapi.RestfulInterface{
-	{Path: cluster.NodeDirectory, Handle: apiV1NodeHandler},
-}
+var gMasterPort string
+var gNodeName string
 
 func main() {
 
-	//var NodeName = os.Args[1]
-	var PortNum = os.Args[2]
+	gNodeName := os.Args[1]
+	gMasterPort := os.Args[2]
+	nodeport := os.Args[3]
 
+	//start a thread to watch live state of Node
 	go cluster.NodeExit()
-	restapi.InitRestSvr(PortNum, nodeAPI)
+
+	//start a thread to send heart beat to master
+	go cluster.NodeLiveHeartBeat(gMasterPort, gNodeName)
+
+	// start a rpc server for master and to access
+	node := new(cluster.Node)
+	rpc.Register(node)
+	rpc.HandleHTTP()
+
+	l, e := net.Listen("tcp", "127.0.0.1:"+nodeport)
+
+	if e != nil {
+		log.Fatal("node listen error:", e)
+	}
+
+	log.Printf("%s is Starting......", gNodeName)
+	http.Serve(l, nil)
 
 }
