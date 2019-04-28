@@ -9,20 +9,17 @@ import (
 	"os"
 )
 
-var gMasterPort string
-var gNodeName string
-
 func main() {
 
-	gNodeName := os.Args[1]
-	gMasterPort := os.Args[2]
+	cluster.GNodeName = os.Args[1]
+	cluster.GMasterPort = os.Args[2]
 	nodeport := os.Args[3]
 
 	//start a thread to watch live state of Node
 	go cluster.NodeExit()
 
 	//start a thread to send heart beat to master
-	go cluster.NodeLiveHeartBeat(gMasterPort, gNodeName)
+	go cluster.NodeLiveHeartBeat(cluster.GMasterPort, cluster.GNodeName)
 
 	// start a rpc server for master and to access
 	node := new(cluster.Node)
@@ -35,7 +32,7 @@ func main() {
 		log.Fatal("node listen error:", e)
 	}
 
-	log.Printf("%s is Starting......", gNodeName)
+	log.Printf("%s is Starting......", cluster.GNodeName)
 	http.Serve(l, nil)
 
 }

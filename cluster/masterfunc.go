@@ -37,7 +37,7 @@ func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) erro
 func (m *Master) KillMaster(masterlive *bool, reply *bool) error {
 
 	//kill nodes
-	for k, v := range GNodeInfo {
+	for _, v := range GNodeInfo {
 
 		client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+v.NodePort)
 		if err != nil {
@@ -53,8 +53,6 @@ func (m *Master) KillMaster(masterlive *bool, reply *bool) error {
 		if err != nil {
 			log.Fatal("arith error:", err)
 		}
-
-		log.Println(k, v)
 
 	}
 
@@ -73,6 +71,7 @@ func MasterExit() {
 		if GMasterlive == true {
 			time.Sleep(time.Second * 2)
 		} else {
+			log.Printf("%s stopping ......", GMasterInfo.MasterName)
 			os.Exit(0)
 		}
 	}

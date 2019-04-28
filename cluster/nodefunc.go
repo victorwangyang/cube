@@ -13,6 +13,12 @@ type Node int
 //GNodelive is the flag of liveness
 var GNodelive = true
 
+//GMasterPort is the flag of liveness
+var GMasterPort string
+
+//GNodeName is the flag of liveness
+var GNodeName string
+
 //KillNode is func for regester
 func (n *Node) KillNode(nodelive *bool, reply *bool) error {
 
@@ -29,6 +35,7 @@ func NodeExit() {
 		if GNodelive == true {
 			time.Sleep(time.Second * 2)
 		} else {
+			log.Printf("%s stopping ......", GNodeName)
 			os.Exit(0)
 		}
 
