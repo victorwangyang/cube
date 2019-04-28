@@ -10,13 +10,26 @@ import (
 //gClusterInfo is Cluster set information,like map["my-cluster"] = "masterport"
 var gClusterInfo map[string]string
 
+type clusterPutReq struct {
+	Clustername string `json:"clustername"`
+	Clustersize string `json:"clustersize"`
+}
+
 func apiV1ClusterPUT(context *gin.Context) {
 
-	clustername := "my-cluster"
-	clustersize := "3"
-	gClusterInfo[clustername] = cluster.APIV1StartCluster(clustersize)
+	var clusterputreq clusterPutReq
 
-	log.Println(gClusterInfo[clustername])
+	err := context.BindJSON(&clusterputreq)
+	if err != nil {
+		log.Println(err)
+		context.JSON(200, gin.H{"errcode": 400, "description": "Post Data Err"})
+		return
+	}
+
+	gClusterInfo[clusterputreq.Clustername] = cluster.APIV1StartCluster(clusterputreq.Clustersize)
+
+	log.Println(gClusterInfo[clusterputreq.Clustersize])
+	//log.Println(gClusterInfo[clustername])
 
 }
 

@@ -22,11 +22,13 @@ type HeartBeatInfo struct {
 //HeartBeatNotify is func for regester
 func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) error {
 
-	nodename := (*Heartbeatinfo).NodeName
+	// nodename := (*Heartbeatinfo).NodeName
 
-	var tempNodeInfo = NodeInfo{GNodeInfo[nodename].NodePort, (*Heartbeatinfo).NodeLiveCount}
+	// var tempNodeInfo = NodeInfo{GNodeInfo[nodename].NodePort, (*Heartbeatinfo).NodeLiveCount}
 
-	GNodeInfo[nodename] = tempNodeInfo
+	// GNodeInfo[nodename] = tempNodeInfo
+
+	log.Printf("beat heart..........")
 
 	*reply = true
 

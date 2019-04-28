@@ -51,11 +51,14 @@ func NodeLiveHeartBeat(masterport string, nodename string) {
 	heartbeatinfo.NodeName = nodename
 	heartbeatinfo.NodeLiveCount = 5
 
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+masterport)
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	defer client.Close()
+
 	for {
-		client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+masterport)
-		if err != nil {
-			log.Fatal("dialing:", err)
-		}
 
 		err = client.Call("Master.HeartBeatNotify", heartbeatinfo, &reply)
 

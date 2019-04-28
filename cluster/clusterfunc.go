@@ -15,8 +15,8 @@ const (
 	MasterDirectory = "/api/v1/cluster/master"
 	NodeDirectory   = "/api/v1/cluster/node"
 
-	MasterExePosition = "./cluster/master/master"
-	NodeExePosition   = "./cluster/node/node"
+	MasterExePosition = "../cluster/master/master"
+	NodeExePosition   = "../cluster/node/node"
 )
 
 // MasterInfo is struct of Master information
@@ -68,6 +68,8 @@ func APIV1KillCluster(masterport string) {
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
+
+	defer client.Close()
 
 	err = client.Call("Master.KillMaster", live, &reply)
 

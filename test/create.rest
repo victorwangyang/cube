@@ -1,1 +1,14 @@
+# PUT http://localhost:8888/api/v1/cluster/?clustername=blue-cluster&clustersize=5
+# Content-Type: application/x-www-form-urlencoded
+
+###########
 PUT http://localhost:8888/api/v1/cluster
+Content-Type: application/json
+
+{
+	"clustername": "my-cluster",
+	"clustersize": "3"
+}
+
+###########
+DELETE http://localhost:8888/api/v1/cluster
