@@ -3,10 +3,12 @@ package main
 import (
 	"cube/cluster"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/rpc"
 	"os"
+	"time"
 )
 
 func main() {
@@ -16,6 +18,8 @@ func main() {
 	cluster.GMasterInfo.NodeNumber = os.Args[3]
 
 	cluster.GNodePort = make(map[string]string)
+
+	rand.Seed(time.Now().UnixNano())
 
 	//start nodes here,so master can save all informations of nodes
 	cluster.APIV1StartNodesDeamon(cluster.GMasterInfo.NodeNumber, cluster.GMasterInfo.MasterPort)

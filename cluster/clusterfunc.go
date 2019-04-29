@@ -46,8 +46,8 @@ var GNodePort map[string]string
 func APIV1StartCluster(nodenumber string) string {
 
 	//set cluster staus values
-	mastername := "Master-PM-" + strconv.Itoa(80000+rand.Intn(10000))
 	masterport := strconv.Itoa(30000 + rand.Intn(10000))
+	mastername := "Master-PM-" + masterport
 
 	//start Master process
 	cmd := exec.Command(MasterExePosition, mastername, masterport, nodenumber)
@@ -91,8 +91,8 @@ func APIV1StartNodesDeamon(nodenumber string, masterport string) {
 
 	for i := 0; i < nodeNumber; i++ {
 
-		nodename := "Node-PM-" + strconv.Itoa(90000+rand.Intn(10000))
 		nodeport := strconv.Itoa(20000 + rand.Intn(10000))
+		nodename := "Node-PM-" + nodeport
 
 		GNodePort[nodename] = nodeport
 		GNodeLiveCount.Store(nodename, 0)

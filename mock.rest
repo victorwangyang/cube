@@ -7,8 +7,31 @@ Content-Type: application/json
 
 {
 	"clustername": "my-cluster",
-	"clustersize": "3"
+	"clustersize": "15"
+}
+
+###########
+PUT http://localhost:8888/api/v1/cluster
+Content-Type: application/json
+
+{
+	"clustername": "my-cluster1",
+	"clustersize": "10"
+}
+
+
+###########
+DELETE http://localhost:8888/api/v1/cluster
+Content-Type: application/json
+
+{
+	"clustername": "my-cluster"
 }
 
 ###########
 DELETE http://localhost:8888/api/v1/cluster
+Content-Type: application/json
+
+{
+	"clustername": "my-cluster1"
+}
