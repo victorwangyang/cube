@@ -15,7 +15,7 @@ func main() {
 	cluster.GMasterInfo.MasterPort = os.Args[2]
 	cluster.GMasterInfo.NodeNumber = os.Args[3]
 
-	cluster.GNodeInfo = make(map[string]cluster.NodeInfo)
+	cluster.GNodePort = make(map[string]string)
 
 	//start nodes here,so master can save all informations of nodes
 	cluster.APIV1StartNodesDeamon(cluster.GMasterInfo.NodeNumber, cluster.GMasterInfo.MasterPort)

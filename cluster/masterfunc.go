@@ -22,11 +22,7 @@ type HeartBeatInfo struct {
 //HeartBeatNotify is func for regester
 func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) error {
 
-	// nodename := (*Heartbeatinfo).NodeName
-
-	// var tempNodeInfo = NodeInfo{GNodeInfo[nodename].NodePort, (*Heartbeatinfo).NodeLiveCount}
-
-	// GNodeInfo[nodename] = tempNodeInfo
+	GNodeLiveCount.Store((*Heartbeatinfo).NodeName, (*Heartbeatinfo).NodeLiveCount)
 
 	log.Printf("beat heart..........")
 
@@ -39,9 +35,9 @@ func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) erro
 func (m *Master) KillMaster(masterlive *bool, reply *bool) error {
 
 	//kill nodes
-	for _, v := range GNodeInfo {
+	for _, v := range GNodePort {
 
-		client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+v.NodePort)
+		client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+v)
 		if err != nil {
 			log.Fatal("dialing:", err)
 		}

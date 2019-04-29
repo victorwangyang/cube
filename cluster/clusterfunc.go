@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"sync"
 )
 
 // constant of cluster
@@ -15,8 +16,8 @@ const (
 	MasterDirectory = "/api/v1/cluster/master"
 	NodeDirectory   = "/api/v1/cluster/node"
 
-	MasterExePosition = "../cluster/master/master"
-	NodeExePosition   = "../cluster/node/node"
+	MasterExePosition = "./bin/master"
+	NodeExePosition   = "./bin/node"
 )
 
 // MasterInfo is struct of Master information
@@ -35,8 +36,11 @@ type NodeInfo struct {
 //GMasterInfo is GMasterInfo
 var GMasterInfo MasterInfo
 
-//GNodeInfo is GNodeInfo
-var GNodeInfo map[string]NodeInfo
+//GNodeLiveCount is GNodeLiveCount
+var GNodeLiveCount sync.Map
+
+//GNodePort is GNodePort
+var GNodePort map[string]string
 
 // APIV1StartCluster is called by doserver's RESTful API to start the Cluster
 func APIV1StartCluster(nodenumber string) string {
@@ -90,8 +94,8 @@ func APIV1StartNodesDeamon(nodenumber string, masterport string) {
 		nodename := "Node-PM-" + strconv.Itoa(90000+rand.Intn(10000))
 		nodeport := strconv.Itoa(20000 + rand.Intn(10000))
 
-		var tempNodeInfo = NodeInfo{nodeport, 0}
-		GNodeInfo[nodename] = tempNodeInfo
+		GNodePort[nodename] = nodeport
+		GNodeLiveCount.Store(nodename, 0)
 
 		cmd := exec.Command(NodeExePosition, nodename, masterport, nodeport)
 		cmd.Stdin = os.Stdin

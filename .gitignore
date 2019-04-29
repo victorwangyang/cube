@@ -5,3 +5,7 @@ cluster/node/node
 do/do
 .DS_Store
 do/do
+bin/do
+bin/doserver
+bin/master
+bin/node

@@ -2,16 +2,16 @@
 
 
 echo "do building......."
-go build -o ./do/do ./do/*.go
+go build -o ./bin/do ./do/*.go
 
 echo "master building......."
-go build -o ./cluster/master/master ./cluster/master/master.go
+go build -o ./bin/master ./cluster/master/master.go
 
 echo "node building......."
-go build -o ./cluster/node/node ./cluster/node/node.go
+go build -o ./bin/node ./cluster/node/node.go
 
 echo "doserver building......."
-go build -o ./doserver/doserver ./doserver/doserver.go
+go build -o ./bin/doserver ./doserver/doserver.go
 
 
 echo "ending......."
