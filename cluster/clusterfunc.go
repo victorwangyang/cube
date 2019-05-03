@@ -70,7 +70,7 @@ func APIV1KillCluster(masterport string) {
 	client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+masterport)
 
 	if err != nil {
-		log.Fatal("dialing:", err)
+		log.Fatal("APIV1KillCluster:", err)
 	}
 
 	defer client.Close()
