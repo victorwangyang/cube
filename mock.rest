@@ -15,22 +15,10 @@ Content-Type: application/json
 
 {
 	"clustername": "my-cluster1",
-	"clustersize": "2"
+	"clustersize": "12"
 }
-
-
-###########
-DELETE http://localhost:8888/api/v1/cluster
-Content-Type: application/json
-
-{
-	"clustername": "my-cluster1"
-}
-
 ###########
 DELETE http://localhost:8888/api/v1/cluster/my-cluster
-
-
 ###########
 GET http://localhost:8888/api/v1/cluster
 
