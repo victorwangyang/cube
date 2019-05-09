@@ -64,8 +64,13 @@ func NodeLiveHeartBeat(masterport string, nodename string) {
 
 		err = client.Call("Master.HeartBeatNotify", heartbeatinfo, &reply)
 
+		if reply == false {
+
+			GNodelive = false
+		}
+
 		if err != nil {
-			log.Fatal("arith error:", err)
+			log.Println("NodeLiveHeartBeat error:", err)
 		}
 
 		time.Sleep(time.Second * 5)
