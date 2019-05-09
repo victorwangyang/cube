@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"log"
-	"net/rpc"
 	"os"
 	"time"
 )
@@ -19,14 +18,16 @@ type HeartBeatInfo struct {
 	NodeLiveCount int
 }
 
+var gNodesNotify = true
+
 //HeartBeatNotify is func for regester
 func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) error {
 
 	GNodeLiveCount.Store((*Heartbeatinfo).NodeName, (*Heartbeatinfo).NodeLiveCount)
 
-	log.Printf("beat heart..........")
+	//	log.Printf(" %s beat heart..........", (*Heartbeatinfo).NodeName)
 
-	*reply = true
+	*reply = gNodesNotify
 
 	return nil
 }
@@ -34,27 +35,9 @@ func (m *Master) HeartBeatNotify(Heartbeatinfo *HeartBeatInfo, reply *bool) erro
 //KillMaster is KillMaster
 func (m *Master) KillMaster(masterlive *bool, reply *bool) error {
 
-	//kill nodes
-	for _, v := range GNodePort {
+	gNodesNotify = *masterlive
+	time.Sleep(time.Second * 6)
 
-		client, err := rpc.DialHTTP("tcp", "127.0.0.1:"+v)
-		if err != nil {
-			log.Fatal("dialing:", err)
-		}
-
-		var live, reply bool
-
-		live = *masterlive
-
-		err = client.Call("Node.KillNode", live, &reply)
-
-		if err != nil {
-			log.Fatal("arith error:", err)
-		}
-
-	}
-
-	// kill master
 	GMasterlive = *masterlive
 
 	*reply = true
@@ -67,7 +50,7 @@ func MasterExit() {
 
 	for {
 		if GMasterlive == true {
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second * 5)
 		} else {
 			log.Printf("%s stopping ......", GMasterInfo.MasterName)
 			os.Exit(0)
